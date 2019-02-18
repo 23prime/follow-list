@@ -12,6 +12,7 @@ use egg_mode::user;
 use egg_mode::list;
 use chrono::{Utc, FixedOffset};
 
+
 fn main() {
     loop {
         fit();
@@ -25,6 +26,7 @@ fn main() {
         thread::sleep(interval);
     }
 }
+
 
 fn fit() {
     let mut core = reactor::Core::new().unwrap();
@@ -81,7 +83,9 @@ fn fit() {
     println!("\nCompleted!");
 }
 
-fn get_follows(config: &common::Config, handle: &tokio_core::reactor::Handle, core: &mut tokio_core::reactor::Core) -> HashSet<u64> {
+
+fn get_follows(config: &common::Config, handle: &tokio_core::reactor::Handle,
+               core: &mut tokio_core::reactor::Core) -> HashSet<u64> {
     println!("Get all follows...");
 
     let mut follows = HashSet::new();
@@ -97,7 +101,9 @@ fn get_follows(config: &common::Config, handle: &tokio_core::reactor::Handle, co
     return follows;
 }
 
-fn get_list_members(config: &common::Config, handle: &tokio_core::reactor::Handle, core: &mut tokio_core::reactor::Core, list_id: list::ListID) -> HashSet<u64> {
+
+fn get_list_members(config: &common::Config, handle: &tokio_core::reactor::Handle,
+                    core: &mut tokio_core::reactor::Core, list_id: list::ListID) -> HashSet<u64> {
     println!("Get all list members...");
 
     let mut list_mem = HashSet::new();
@@ -111,11 +117,14 @@ fn get_list_members(config: &common::Config, handle: &tokio_core::reactor::Handl
     return list_mem;
 }
 
-fn print_users(ids: Vec<&u64>, config: &common::Config, handle: &tokio_core::reactor::Handle, core: &mut tokio_core::reactor::Core) {
+
+fn print_users(ids: Vec<&u64>, config: &common::Config, handle: &tokio_core::reactor::Handle,
+               core: &mut tokio_core::reactor::Core) {
     for user in core.run(user::lookup(ids, &config.token, handle)).unwrap() {
         println!("- {} (@{})", user.name, user.screen_name);
     }
 }
+
 
 #[allow(dead_code)]
 fn split_each<T>(mut xs: Vec<T>, n: usize) -> Vec<Vec<T>> {
