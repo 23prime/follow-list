@@ -41,13 +41,13 @@ fn fit(follows0: &HashSet<u64>) -> HashSet<u64> {
     println!("");
 
     if &follows == follows0 {
-        println!("Follow has unchanged");
+        println!("Follow has unchanged.");
     } else {
         let list_id = list::ListID::ID(1091617707403862017);
         let list_mem = get_list_members(&config, &handle, &mut core, list_id);
 
         if follows == list_mem {
-            println!("No member to add to / remove from list");
+            println!("No member to add to / remove from list.");
         } else {
             // フォローしてるけどリストに入ってないアカウントの取得
             println!("Get follows \\ list...");
@@ -56,9 +56,9 @@ fn fit(follows0: &HashSet<u64>) -> HashSet<u64> {
             let follow_list_ids = follow_list.into_iter().collect::<Vec<_>>();
 
             if follow_list_ids.is_empty() {
-                println!("No member to add to list");
+                println!("No member to add to list.");
             } else {
-                println!("Add following accounts to list");
+                println!("Add following accounts to list.");
                 print_users(follow_list_ids.clone(), &config, &handle, &mut core);
 
                 // コイツらをリストに突っ込む
@@ -76,9 +76,9 @@ fn fit(follows0: &HashSet<u64>) -> HashSet<u64> {
             let list_follow_ids = list_follow.into_iter().collect::<Vec<_>>();
 
             if list_follow_ids.is_empty() {
-                println!("No member to remove from list");
+                println!("No member to remove from list.");
             } else {
-                println!("Remove following accounts from list");
+                println!("Remove following accounts from list.");
                 print_users(list_follow_ids.clone(), &config, &handle, &mut core);
 
                 // コイツらをリストから外す
@@ -86,8 +86,8 @@ fn fit(follows0: &HashSet<u64>) -> HashSet<u64> {
                     .unwrap();
             }
         }
-        println!("\nCompleted!");
     }
+    println!("\nCompleted!");
     return follows;
 }
 
