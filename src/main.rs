@@ -14,8 +14,10 @@ use chrono::{Utc, FixedOffset};
 
 
 fn main() {
+    let mut follows0 = HashSet::new();
+
     loop {
-        fit();
+        follows0 = fit(&follows0);
 
         let jst = FixedOffset::east(3600 * 9);
         let now = Utc::now().with_timezone(&jst);
@@ -28,59 +30,65 @@ fn main() {
 }
 
 
-fn fit() {
+fn fit(follows0: &HashSet<u64>) -> HashSet<u64> {
     let mut core = reactor::Core::new().unwrap();
 
     let config = common::Config::load(&mut core);
     let handle = core.handle();
 
-    let list_id = list::ListID::ID(1091617707403862017);
 
     let follows = get_follows(&config, &handle, &mut core);
     println!("");
-    let list_mem = get_list_members(&config, &handle, &mut core, list_id);
 
-    if follows == list_mem {
-        println!("No member to add to / remove from list");
+    if &follows == follows0 {
+        println!("Follow has unchanged");
     } else {
-        // フォローしてるけどリストに入ってないアカウントの取得
-        println!("Get follows \\ list...");
+        let list_id = list::ListID::ID(1091617707403862017);
+        let list_mem = get_list_members(&config, &handle, &mut core, list_id);
 
-        let follow_list = follows.difference(&list_mem);
-        let follow_list_ids = follow_list.into_iter().collect::<Vec<_>>();
-
-        if follow_list_ids.is_empty() {
-            println!("No member to add to list");
+        if follows == list_mem {
+            println!("No member to add to / remove from list");
         } else {
-            println!("Add following accounts to list");
-            print_users(follow_list_ids.clone(), &config, &handle, &mut core);
+            // フォローしてるけどリストに入ってないアカウントの取得
+            println!("Get follows \\ list...");
 
-            // コイツらをリストに突っ込む
-            // 100件までしか一気に突っ込めない（超えるとエラーが返ってくる）けど，
-            // そんなに差分が出ることはまずないと思うので無視．
-            // いざとなれば下の split_each でなんとかなる．
-            core.run(list::add_member_list(follow_list_ids, list_id, &config.token, &handle))
-                .unwrap();
+            let follow_list = follows.difference(&list_mem);
+            let follow_list_ids = follow_list.into_iter().collect::<Vec<_>>();
+
+            if follow_list_ids.is_empty() {
+                println!("No member to add to list");
+            } else {
+                println!("Add following accounts to list");
+                print_users(follow_list_ids.clone(), &config, &handle, &mut core);
+
+                // コイツらをリストに突っ込む
+                // 100件までしか一気に突っ込めない（超えるとエラーが返ってくる）けど，
+                // そんなに差分が出ることはまずないと思うので無視．
+                // いざとなれば下の split_each でなんとかなる．
+                core.run(list::add_member_list(follow_list_ids, list_id, &config.token, &handle))
+                    .unwrap();
+            }
+
+            // リストに入ってるけどフォローしてないアカウントの取得
+            println!("\nGet list \\ follows...");
+
+            let list_follow = list_mem.difference(&follows);
+            let list_follow_ids = list_follow.into_iter().collect::<Vec<_>>();
+
+            if list_follow_ids.is_empty() {
+                println!("No member to remove from list");
+            } else {
+                println!("Remove following accounts from list");
+                print_users(list_follow_ids.clone(), &config, &handle, &mut core);
+
+                // コイツらをリストから外す
+                core.run(list::remove_member_list(list_follow_ids, list_id, &config.token, &handle))
+                    .unwrap();
+            }
         }
-
-        // リストに入ってるけどフォローしてないアカウントの取得
-        println!("\nGet list \\ follows...");
-
-        let list_follow = list_mem.difference(&follows);
-        let list_follow_ids = list_follow.into_iter().collect::<Vec<_>>();
-
-        if list_follow_ids.is_empty() {
-            println!("No member to remove from list");
-        } else {
-            println!("Remove following accounts from list");
-            print_users(list_follow_ids.clone(), &config, &handle, &mut core);
-
-            // コイツらをリストから外す
-            core.run(list::remove_member_list(list_follow_ids, list_id, &config.token, &handle))
-                .unwrap();
-        }
+        println!("\nCompleted!");
     }
-    println!("\nCompleted!");
+    return follows;
 }
 
 
