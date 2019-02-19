@@ -1,3 +1,5 @@
 /target
 **/*.rs.bk
-/twitter_settings
+twitter_settings
+consumer_key
+consumer_secret

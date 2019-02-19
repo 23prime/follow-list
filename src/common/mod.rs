@@ -18,8 +18,8 @@ pub struct Config {
 
 impl Config {
     pub fn load(core: &mut Core) -> Self {
-        let consumer_key = include_str!("/home/okkey/.key/twitter/consumer_key").trim();
-        let consumer_secret = include_str!("/home/okkey/.key/twitter/consumer_secret").trim();
+        let consumer_key = include_str!("../../consumer_key").trim();
+        let consumer_secret = include_str!("../../consumer_secret").trim();
         let handle = core.handle();
 
         let con_token = egg_mode::KeyPair::new(consumer_key, consumer_secret);
